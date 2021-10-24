@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 part 'themes_data_state.dart';
 
 class ThemesDataCubit extends Cubit {
@@ -57,7 +57,7 @@ class ThemesDataCubit extends Cubit {
     "textColor": Color(0xFF2F2F2F)
   };
 
-  bool isDark = false;
+  bool isDark = true;
 
   ThemeData get themeData => ThemeData(
       primaryColor: colors["borderColor"],
@@ -65,10 +65,13 @@ class ThemesDataCubit extends Cubit {
       backgroundColor: colors["primary"],
       scaffoldBackgroundColor: colors["tertiary"],
       textTheme: TextTheme(
-        headline1: TextStyle(color: colors["textColor"], fontSize: 18),
-        headline2: TextStyle(color: colors["textColor"], fontSize: 14),
-        bodyText1: TextStyle(color: colors["textColor"], fontSize: 14),
-        bodyText2: TextStyle(color: colors["textColor"], fontSize: 14),
+        headline1: TextStyle(
+            color: colors["textColor"],
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w500),
+        headline2: TextStyle(color: colors["textColor"], fontSize: 14.sp),
+        bodyText1: TextStyle(color: colors["textColor"], fontSize: 14.sp),
+        bodyText2: TextStyle(color: colors["textColor"], fontSize: 14.sp),
       ),
       colorScheme: ColorScheme.fromSwatch(
         primarySwatch: Colors.blue,

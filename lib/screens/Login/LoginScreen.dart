@@ -1,137 +1,173 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passman/cubit/themes_data_cubit.dart';
-import 'package:passman/themes/themes_provider.dart';
-import 'package:passman/utilities/bloc_theme.dart';
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
+import 'package:passman/cubit/themes_data_cubit.dart';
+import 'package:passman/models/loginPassword_model.dart';
+import 'package:passman/screens/PassList/PassListScreen.dart';
+import 'package:passman/themes/themes_provider.dart';
+import 'package:passman/utilities/database_helper.dart';
+import 'package:passman/widgets/CardBuilder.dart';
+import 'package:passman/widgets/InputBuilder.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:passman/route/route.dart' as route;
 
-//import 'package:passman/utilities/bloc_theme.dart';
-//import 'package:passman/utilities/themes.dart';
-//import 'package:passman/utilities/customColorScheme.dart';
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
 
-class Login extends StatelessWidget {
-  const Login({Key key}) : super(key: key);
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  String passwordLogin = '', password = '', rePassword = '';
+  bool isFirst = false;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    checkLoginPassword();
+  }
+
+  @override
+  void dispose() {
+    DatabaseHelper.instance.close();
+    super.dispose();
+  }
+
+  passwordLoginOnChanged(String arg) {
+    passwordLogin = arg;
+  }
+
+  passwordOnChanged(String arg) {
+    password = arg;
+  }
+
+  rePasswordOnChanged(String arg) {
+    rePassword = arg;
+  }
+
+  onConfirm() async {
+    SnackBar snackBar;
+    if (isFirst) {
+      if (password == rePassword) {
+        int result = await DatabaseHelper.instance
+            .addLoginPassword(LoginPasswordModel(passwordLogin, password));
+        snackBar = SnackBar(content: const Text('Oluşturuldu'));
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        checkLoginPassword();
+      } else {
+        snackBar = SnackBar(content: const Text('Şifreler uyuşmuyor.'));
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          route.List,
+          (route) => false,
+        );
+      }
+    } else {
+      bool result = await DatabaseHelper.instance.checkLoginPassword(password);
+
+      if (result) {
+        snackBar = SnackBar(content: const Text('Giriş Başarılı'));
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          route.List,
+          (route) => false,
+        );
+      } else {
+        snackBar = SnackBar(content: const Text('Yanlış Şifre'));
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+  }
+
+  checkLoginPassword() async {
+    bool result = await DatabaseHelper.instance.checkLoginPasswordCount();
+
+    setState(() {
+      isFirst = !result;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    Map theme =
-        BlocProvider.of<ThemesDataCubit>(context, listen: true).getColors;
+    Map theme = context.watch<ThemesProvider>().getColors;
+    TextTheme mainTextTheme = Theme.of(context).textTheme;
 
-    TextTheme mainThemeData = Theme.of(context).textTheme;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: theme["primary"],
-        title: Center(
-          child: Text(
-            'Parola Oluştur',
-            style: mainThemeData.headline1,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: theme["primary"],
+          title: Center(
+            child: Text(
+              'Parola Gir',
+              style: mainTextTheme.headline1,
+            ),
           ),
         ),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: double.infinity,
-            alignment: Alignment.center,
-            margin: EdgeInsets.only(left: 10, right: 10),
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              color: theme["primary"],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-              Padding(
-                padding: EdgeInsets.only(top: 12),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: theme["fivetiary"],
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(15),
-                          topRight: Radius.circular(15)),
-                    ),
-                    padding:
-                        EdgeInsets.only(top: 5, left: 5, bottom: 5, right: 45),
-                    child: Text(
-                      'Yeni Parola Oluştur',
-                      style: mainThemeData.bodyText1,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                height: 10.h,
-                color: theme["secondary"],
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Container(
-                      //color: Theme.of(context).colorScheme.accent,
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 50),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Parola',
-                            style: Theme.of(context).textTheme.bodyText2,
+        body: SingleChildScrollView(
+          child: Container(
+            height: 600.h,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                isFirst
+                    ? CardBuilder(
+                        title: "Yeni Parola Oluştur",
+                        onConfirm: onConfirm,
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 20),
+                              InputBuilder(
+                                text: "Parola",
+                                onChanged: passwordLoginOnChanged,
+                              ),
+                              SizedBox(height: 3),
+                              InputBuilder(
+                                text: "Parola Tekrarı",
+                                onChanged: passwordOnChanged,
+                              ),
+                              SizedBox(height: 3),
+                              InputBuilder(
+                                text: "İpucu",
+                                onChanged: rePasswordOnChanged,
+                              ),
+                              SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      )
+                    : CardBuilder(
+                        title: "Giriş Parolanızı Giriniz",
+                        buttonText: "Giriş Yap",
+                        onConfirm: onConfirm,
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 20),
+                              InputBuilder(
+                                text: "Parola",
+                                onChanged: passwordOnChanged,
+                              ),
+                              SizedBox(height: 20),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                        child: Container(
-                      color: BlocProvider.of<ThemesDataCubit>(context,
-                              listen: true)
-                          .getColors['primary'],
-                      child: TextField(
-                        decoration: InputDecoration(
-                            hintText: 'giriniz...', border: InputBorder.none),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              Row(
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        Provider.of<ThemesProvider>(context, listen: false)
-                            .changeT();
-                      },
-                      child: Text(
-                        'Provider',
-                        style: TextStyle(color: Colors.white),
-                      )),
-                  TextButton(
-                      onPressed: () {
-                        BlocProvider.of<BlocTheme>(context)
-                            .add(SupportedTheme.TOGGLE);
-                      },
-                      child: Text(
-                        'Bloc',
-                        style: TextStyle(color: Colors.white),
-                      )),
-                  TextButton(
-                      onPressed: () {
-                        context.read<ThemesDataCubit>().toggleThemes();
-                      },
-                      child: Text(
-                        'Cubit',
-                        style: TextStyle(color: Colors.white),
-                      )),
-                ],
-              )
-            ]),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

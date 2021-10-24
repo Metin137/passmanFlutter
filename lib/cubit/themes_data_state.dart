@@ -8,5 +8,5 @@ class ThemesDataInitial extends ThemesDataState {}
 class ThemesDataLoaded extends ThemesDataState {
   final Map<String, Color> colors;
 
-  ThemesDataLoaded({this.colors});
+  ThemesDataLoaded({required this.colors});
 }
