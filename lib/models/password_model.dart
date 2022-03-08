@@ -20,7 +20,9 @@ class PasswordModel {
 
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
-    map['id'] = _id;
+    if (_id != null) {
+      map['id'] = _id;
+    }
     map['passwordName'] = _passwordName;
     map['passwordLogin'] = _passwordLogin;
     map['password'] = _password;

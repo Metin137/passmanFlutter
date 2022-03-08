@@ -47,6 +47,17 @@ class _PassListScreenState extends State<PassListScreen> {
               style: mainTextTheme.headline1,
             ),
           ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  route.Settings,
+                );
+              },
+              icon: Icon(Icons.settings),
+            )
+          ],
         ),
         floatingActionButton: buildFloatingActionButton(theme),
         body: ListView.builder(

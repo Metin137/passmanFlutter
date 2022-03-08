@@ -69,11 +69,11 @@ class DatabaseHelper {
     return result;
   }
 
-  Future<int> updatePassword(PasswordModel password) async {
+  Future<int> updatePassword(String id, PasswordModel password) async {
     var db = await _getDatabase;
 
     var result = await db.update(_table, password.toMap(),
-        where: '$_columnID = ?', whereArgs: [password.id]);
+        where: '$_columnID = ?', whereArgs: [id]);
 
     return result;
   }
@@ -82,6 +82,15 @@ class DatabaseHelper {
     var db = await _getDatabase;
 
     var result = await db.delete(_table);
+
+    return result;
+  }
+
+  Future<int> deletePassword(String id) async {
+    var db = await _getDatabase;
+
+    var result =
+        await db.delete(_table, where: '$_columnID = ?', whereArgs: [id]);
 
     return result;
   }

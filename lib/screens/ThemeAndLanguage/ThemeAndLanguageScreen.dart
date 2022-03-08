@@ -23,14 +23,13 @@ class ThemeAndLanguageScreen extends StatelessWidget {
           backgroundColor: theme["primary"],
           title: Center(
             child: Text(
-              'Parola Oluştur',
+              'Tema ve Dil',
               style: mainTextTheme.headline1,
             ),
           ),
         ),
         body: SingleChildScrollView(
           child: Container(
-            height: 600.h,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

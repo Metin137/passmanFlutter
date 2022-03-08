@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:passman/cubit/themes_data_cubit.dart';
 import 'package:passman/themes/themes_provider.dart';
 import 'package:passman/widgets/ListItemBuilder.dart';
+import 'package:passman/route/route.dart' as route;
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -38,6 +39,12 @@ class SettingsScreen extends StatelessWidget {
               ListItemBuilder(
                 icon: Icons.dark_mode,
                 title: 'Temayı değiştir',
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    route.ThemeAndLAnguage,
+                  );
+                },
               ),
               ListItemBuilder(
                 icon: Icons.backup,

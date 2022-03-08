@@ -91,7 +91,9 @@ class ListItemBuilder extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: theme["textColor"],
+                overflow: TextOverflow.ellipsis,
               ),
+              maxLines: 1,
             ),
             if (description != "") ...[
               Text(
@@ -100,7 +102,9 @@ class ListItemBuilder extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: theme["gray"],
+                  overflow: TextOverflow.ellipsis,
                 ),
+                maxLines: 1,
               ),
             ]
           ],

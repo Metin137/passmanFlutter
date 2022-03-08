@@ -39,6 +39,12 @@ class _CreatePassScreenState extends State<CreatePassScreen> {
   late FocusNode passwordFocus;
   late FocusNode passwordInfoFocus;
 
+  bool isFocused = true;
+  bool passwordNameFocusCheck = false;
+  bool passwordLoginFocusCheck = false;
+  bool passwordFocusCheck = false;
+  bool passwordInfoFocusCheck = false;
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +68,28 @@ class _CreatePassScreenState extends State<CreatePassScreen> {
     setState(() {
       screenType = widget.screenType;
     });
+
+    passwordNameFocus.addListener(() {
+      setState(() {
+        print("Has focus: ${passwordNameFocus.hasFocus}");
+        passwordNameFocusCheck = passwordNameFocus.hasFocus;
+      });
+    });
+    passwordLoginFocus.addListener(() {
+      setState(() {
+        passwordLoginFocusCheck = passwordLoginFocus.hasFocus;
+      });
+    });
+    passwordFocus.addListener(() {
+      setState(() {
+        passwordFocusCheck = passwordFocus.hasFocus;
+      });
+    });
+    passwordInfoFocus.addListener(() {
+      setState(() {
+        passwordInfoFocusCheck = passwordInfoFocus.hasFocus;
+      });
+    });
   }
 
   @override
@@ -84,6 +112,12 @@ class _CreatePassScreenState extends State<CreatePassScreen> {
   Widget build(BuildContext context) {
     Map theme = context.watch<ThemesProvider>().getColors;
     TextTheme mainTextTheme = Theme.of(context).textTheme;
+    isFocused = passwordNameFocusCheck ||
+        passwordLoginFocusCheck ||
+        passwordFocusCheck ||
+        passwordInfoFocusCheck;
+
+    print('unFocused' + passwordNameFocus.hasFocus.toString());
     //final data = ModalRoute.of(context)!.settings.arguments as String?;
 
     return SafeArea(
@@ -92,31 +126,36 @@ class _CreatePassScreenState extends State<CreatePassScreen> {
           Navigator.pop(context, true);
           return Future.value(true);
         },
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            iconTheme: IconThemeData(color: theme["white"]),
-            backgroundColor: theme["primary"],
-            title: Center(
-              child: Text(
-                'Yeni Parola',
-                style: mainTextTheme.headline1,
+        child: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            appBar: AppBar(
+              iconTheme: IconThemeData(color: theme["white"]),
+              backgroundColor: theme["primary"],
+              title: Center(
+                child: Text(
+                  'Yeni Parola',
+                  style: mainTextTheme.headline1,
+                ),
               ),
+              actions: [Container(width: 50)],
             ),
-            actions: [Container(width: 50)],
-          ),
-          body: KeyboardView(
-            padding: EdgeInsets.symmetric(horizontal: 5),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ...buildTopWidgets,
-                Spacer(),
-                screenType == "view"
-                    ? buildBottomButtonsForView()
-                    : buildBottomButtonsForCreate(),
-              ],
+            body: KeyboardView(
+              padding: EdgeInsets.symmetric(horizontal: 5),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ...buildTopWidgets,
+                  Spacer(),
+                  screenType == "view" && !isFocused
+                      ? buildBottomButtonsForView()
+                      : buildBottomButtonsForCreate(),
+                ],
+              ),
             ),
           ),
         ),
@@ -137,6 +176,22 @@ class _CreatePassScreenState extends State<CreatePassScreen> {
       var snackBar = SnackBar(content: const Text('kaydedildi'));
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      print('passID' + passwordID!);
+      int res = await DatabaseHelper.instance.updatePassword(
+        passwordID!,
+        PasswordModel(
+          passwordName.text,
+          passwordLogin.text,
+          password.text,
+          passwordInfo.text,
+        ),
+      );
+      var snackBar = SnackBar(content: const Text('Güncellendi'));
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.pop(context, true);
+      return Future.value(true);
     }
   }
 
@@ -155,7 +210,42 @@ class _CreatePassScreenState extends State<CreatePassScreen> {
           },
         ),
         RoundedButtonBuilder(icon: Entypo.share),
-        RoundedButtonBuilder(icon: Icons.delete),
+        RoundedButtonBuilder(
+          icon: Icons.delete,
+          onPressed: () {
+            showDialog<void>(
+              context: context,
+              barrierDismissible: false, // user must tap button!
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Uyarı'),
+                  content: Text('Silinsin mi?'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('Evet'),
+                      onPressed: () async {
+                        int res = await DatabaseHelper.instance
+                            .deletePassword(passwordID!);
+                        var snackBar = SnackBar(content: const Text('Silindi'));
+
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        Navigator.of(context).pop();
+                        Navigator.pop(context, true);
+                        return Future.value(true);
+                      },
+                    ),
+                    TextButton(
+                      child: const Text('İptal'),
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
       ],
     );
   }
