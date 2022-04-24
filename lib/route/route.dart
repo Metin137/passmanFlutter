@@ -17,7 +17,7 @@ const String ThemeAndLAnguage = 'ThemeAndLAnguage';
 // Control our page route flow
 Route<dynamic> controller(RouteSettings settings) {
   final args = settings.arguments as Map<String, dynamic>?;
-  debugPrint("ara" + (args?["item"] ?? {}).toString());
+  //debugPrint("ara" + (args?["item"] ?? {}).toString());
   switch (settings.name) {
     case LoginPage:
       return MaterialPageRoute(builder: (context) => Login());

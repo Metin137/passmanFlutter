@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:passman/models/theme_model.dart';
 import 'package:provider/provider.dart';
 import 'package:passman/cubit/themes_data_cubit.dart';
 import 'package:passman/models/loginPassword_model.dart';
@@ -51,8 +52,7 @@ class _LoginState extends State<Login> {
     SnackBar snackBar;
     if (isFirst) {
       if (password == rePassword) {
-        int result = await DatabaseHelper.instance
-            .addLoginPassword(LoginPasswordModel(passwordLogin, password));
+        int result = await DatabaseHelper.instance.addLoginPassword(LoginPasswordModel(passwordLogin, password));
         snackBar = SnackBar(content: const Text('Oluşturuldu'));
 
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -98,13 +98,13 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    Map theme = context.watch<ThemesProvider>().getColors;
+    ThemeColors theme = context.watch<ThemesProvider>().getColors;
     TextTheme mainTextTheme = Theme.of(context).textTheme;
 
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: theme["primary"],
+          backgroundColor: theme.primary,
           title: Center(
             child: Text(
               'Parola Gir',

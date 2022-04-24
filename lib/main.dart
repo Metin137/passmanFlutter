@@ -28,29 +28,20 @@ class MyApp extends StatelessWidget {
         );
       },*/
       builder: (context, themeData) {
-        return ScreenUtilInit(builder: () {
-          return FutureBuilder(
-              future: context.read<ThemesProvider>().getAllThemes(),
-              builder: (_, snapShot) {
-                if (snapShot.hasData) {
-                  SystemChrome.setSystemUIOverlayStyle(
-                    SystemUiOverlayStyle(
-                      statusBarColor:
-                          context.watch<ThemesProvider>().getColors["primary"],
-                    ),
-                  );
+        return ScreenUtilInit(builder: (_) {
+          SystemChrome.setSystemUIOverlayStyle(
+            SystemUiOverlayStyle(
+              statusBarColor: context.watch<ThemesProvider>().getColors.primary,
+            ),
+          );
 
-                  return MaterialApp(
-                    title: 'Flutter Demo',
-                    debugShowCheckedModeBanner: false,
-                    theme: context.watch<ThemesProvider>().themeData,
-                    onGenerateRoute: route.controller,
-                    initialRoute: route.LoginPage,
-                  );
-                } else {
-                  return Container();
-                }
-              });
+          return MaterialApp(
+            title: 'Flutter Demo',
+            debugShowCheckedModeBanner: false,
+            theme: context.watch<ThemesProvider>().themeData,
+            onGenerateRoute: route.controller,
+            initialRoute: route.LoginPage,
+          );
         });
       },
     );

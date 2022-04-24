@@ -42,10 +42,9 @@ class _MyAppState extends State<MyApp> {
       },*/
       child: BlocBuilder<ThemesDataCubit, dynamic>(
         builder: (context, themeData) {
-          return ScreenUtilInit(builder: () {
+          return ScreenUtilInit(builder: (_) {
             SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-              statusBarColor:
-                  context.watch<ThemesDataCubit>().getColors["primary"],
+              statusBarColor: context.watch<ThemesDataCubit>().getColors["primary"],
             ));
 
             return MaterialApp(

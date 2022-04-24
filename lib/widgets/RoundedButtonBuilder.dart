@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:passman/cubit/themes_data_cubit.dart';
+import 'package:passman/models/theme_model.dart';
 import 'package:passman/themes/themes_provider.dart';
 import 'package:passman/widgets/CustomElevatedButton.dart';
 import 'package:provider/provider.dart';
@@ -16,11 +17,11 @@ class RoundedButtonBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map theme = context.watch<ThemesProvider>().getColors;
+    ThemeColors theme = context.watch<ThemesProvider>().getColors;
 
     return CustomElevatedButton(
       onPressed: onPressed,
-      color: theme["fourth"],
+      color: theme.fourth,
       padding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -35,7 +36,7 @@ class RoundedButtonBuilder extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          color: theme["textColor"],
+          color: theme.textColor,
           size: 30.0,
         ),
       ),

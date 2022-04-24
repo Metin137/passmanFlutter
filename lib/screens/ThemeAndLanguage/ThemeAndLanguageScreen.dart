@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:passman/models/theme_model.dart';
+import 'package:passman/widgets/CustomElevatedButton.dart';
 import 'package:provider/provider.dart';
 import 'package:passman/cubit/themes_data_cubit.dart';
 import 'package:passman/themes/themes_provider.dart';
@@ -9,18 +11,42 @@ import 'package:passman/widgets/InputBuilder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:passman/widgets/RoundedStickerBuild.dart';
 
-class ThemeAndLanguageScreen extends StatelessWidget {
+class ThemeAndLanguageScreen extends StatefulWidget {
   const ThemeAndLanguageScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    Map theme = context.watch<ThemesProvider>().getColors;
-    TextTheme mainTextTheme = Theme.of(context).textTheme;
+  State<ThemeAndLanguageScreen> createState() => _ThemeAndLanguageScreenState();
+}
 
+class _ThemeAndLanguageScreenState extends State<ThemeAndLanguageScreen> {
+  int selectedIndex = 0;
+
+  initState() {
+    super.initState();
+    List<ThemeModel> allThemes = context.read<ThemesProvider>().allThemes;
+    String activeThemeName = context.read<ThemesProvider>().activeThemeName;
+    int findIndex = allThemes.indexWhere((element) => element.name == activeThemeName);
+    setState(() {
+      selectedIndex = findIndex;
+    });
+  }
+
+  onConfirm() async {
+    List<ThemeModel> allThemes = context.read<ThemesProvider>().allThemes;
+    ThemeModel activeTheme = allThemes[selectedIndex];
+    await context.read<ThemesProvider>().setActiveTheme(activeTheme.name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ThemeColors theme = context.watch<ThemesProvider>().getColors;
+    List<ThemeModel> allThemes = context.watch<ThemesProvider>().allThemes;
+    TextTheme mainTextTheme = Theme.of(context).textTheme;
+    debugPrint("length: " + allThemes.length.toString());
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: theme["primary"],
+          backgroundColor: theme.primary,
           title: Center(
             child: Text(
               'Tema ve Dil',
@@ -35,14 +61,15 @@ class ThemeAndLanguageScreen extends StatelessWidget {
               children: [
                 CardBuilder(
                   title: "Dil",
-                  stickerColor: theme["secondary"],
+                  stickerColor: theme.secondary,
+                  onConfirm: () => onConfirm(),
                   child: Column(
                     children: [
                       SizedBox(height: 40),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             buildActiveItem(
                               theme: theme,
@@ -59,25 +86,31 @@ class ThemeAndLanguageScreen extends StatelessWidget {
                       SizedBox(height: 40),
                       RoundedStickerBuilder(
                         title: "Tema",
-                        color: theme["secondary"],
+                        color: theme.secondary,
                       ),
                       SizedBox(height: 40),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            buildActiveItem(
-                              theme: theme,
-                              title: "dark",
-                            ),
-                            SizedBox(width: 15),
-                            buildPassiveItem(
-                              theme: theme,
-                              title: "light",
-                            ),
-                          ],
-                        ),
+                      SizedBox(
+                        height: 150,
+                        child: ListView.separated(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            separatorBuilder: (context, index) => SizedBox(width: 10),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: allThemes.length,
+                            itemBuilder: (context, index) {
+                              if (index == selectedIndex) {
+                                return buildActiveItem(
+                                  theme: theme,
+                                  title: allThemes[index].name,
+                                  index: index,
+                                );
+                              } else {
+                                return buildPassiveItem(
+                                  theme: theme,
+                                  title: allThemes[index].name,
+                                  index: index,
+                                );
+                              }
+                            }),
                       ),
                       SizedBox(height: 40),
                     ],
@@ -91,62 +124,62 @@ class ThemeAndLanguageScreen extends StatelessWidget {
     );
   }
 
-  Container buildPassiveItem(
-      {required Map<dynamic, dynamic> theme,
-      String? title = "",
-      IconData? icon}) {
-    return Container(
+  SizedBox buildPassiveItem({required ThemeColors theme, String? title = "", IconData? icon, index = 0}) {
+    return SizedBox(
       width: 150,
       height: 150,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(8)),
-        color: theme["fourth"],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(
-            icon ?? Icons.language,
-            size: 30,
-            color: theme["secondary"],
-          ),
-          Text(title!),
-        ],
+      child: CustomElevatedButton(
+        onPressed: () async {
+          setState(() {
+            selectedIndex = index;
+          });
+        },
+        color: theme.fourth,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              icon ?? Icons.language,
+              size: 30,
+              color: theme.secondary,
+            ),
+            Text(title!),
+          ],
+        ),
       ),
     );
   }
 
-  Container buildActiveItem(
-      {required Map<dynamic, dynamic> theme,
-      String? title = "",
-      IconData? icon}) {
-    return Container(
+  SizedBox buildActiveItem({required ThemeColors theme, String? title = "", IconData? icon, index = 0}) {
+    return SizedBox(
       width: 150,
       height: 150,
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 1,
-          color: theme["secondary"],
-        ),
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(8),
-          bottomRight: Radius.circular(8),
-          bottomLeft: Radius.circular(8),
-        ),
-        color: theme["fifth"],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(
-            icon ?? Icons.language,
-            size: 30,
-            color: theme["secondary"],
+      child: CustomElevatedButton(
+        color: theme.fifth,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(width: 1.0, color: theme.secondary),
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(8),
+            bottomRight: Radius.circular(8),
+            bottomLeft: Radius.circular(8),
           ),
-          Text(title!),
-        ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              icon ?? Icons.language,
+              size: 30,
+              color: theme.secondary,
+            ),
+            Text(title!),
+          ],
+        ),
       ),
     );
   }

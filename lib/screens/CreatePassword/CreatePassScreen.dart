@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:passman/models/theme_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:passman/cubit/themes_data_cubit.dart';
@@ -110,12 +111,9 @@ class _CreatePassScreenState extends State<CreatePassScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Map theme = context.watch<ThemesProvider>().getColors;
+    ThemeColors theme = context.watch<ThemesProvider>().getColors;
     TextTheme mainTextTheme = Theme.of(context).textTheme;
-    isFocused = passwordNameFocusCheck ||
-        passwordLoginFocusCheck ||
-        passwordFocusCheck ||
-        passwordInfoFocusCheck;
+    isFocused = passwordNameFocusCheck || passwordLoginFocusCheck || passwordFocusCheck || passwordInfoFocusCheck;
 
     print('unFocused' + passwordNameFocus.hasFocus.toString());
     //final data = ModalRoute.of(context)!.settings.arguments as String?;
@@ -133,8 +131,8 @@ class _CreatePassScreenState extends State<CreatePassScreen> {
           child: Scaffold(
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
-              iconTheme: IconThemeData(color: theme["white"]),
-              backgroundColor: theme["primary"],
+              iconTheme: IconThemeData(color: theme.white),
+              backgroundColor: theme.primary,
               title: Center(
                 child: Text(
                   'Yeni Parola',
@@ -151,9 +149,7 @@ class _CreatePassScreenState extends State<CreatePassScreen> {
                 children: [
                   ...buildTopWidgets,
                   Spacer(),
-                  screenType == "view" && !isFocused
-                      ? buildBottomButtonsForView()
-                      : buildBottomButtonsForCreate(),
+                  screenType == "view" && !isFocused ? buildBottomButtonsForView() : buildBottomButtonsForCreate(),
                 ],
               ),
             ),
@@ -224,8 +220,7 @@ class _CreatePassScreenState extends State<CreatePassScreen> {
                     TextButton(
                       child: const Text('Evet'),
                       onPressed: () async {
-                        int res = await DatabaseHelper.instance
-                            .deletePassword(passwordID!);
+                        int res = await DatabaseHelper.instance.deletePassword(passwordID!);
                         var snackBar = SnackBar(content: const Text('Silindi'));
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);

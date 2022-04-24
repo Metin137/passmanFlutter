@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:passman/models/theme_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:passman/cubit/themes_data_cubit.dart';
@@ -25,12 +26,12 @@ class ListItemBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map theme = context.watch<ThemesProvider>().getColors;
+    ThemeColors theme = context.watch<ThemesProvider>().getColors;
     //TextTheme mainTextTheme = Theme.of(context).textTheme;
 
     return CustomElevatedButton(
       onPressed: onPressed,
-      color: theme["thirth"],
+      color: theme.thirth,
       padding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
       child: Container(
         height: 90,
@@ -46,7 +47,7 @@ class ListItemBuilder extends StatelessWidget {
                   border: Border(
                     bottom: BorderSide(
                       width: 0.5,
-                      color: theme["white"],
+                      color: theme.white,
                     ),
                   ),
                 ),
@@ -64,33 +65,31 @@ class ListItemBuilder extends StatelessWidget {
     );
   }
 
-  Padding buildRightIcon(Map<dynamic, dynamic> theme) {
+  Padding buildRightIcon(ThemeColors theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Icon(
         Entypo.chevron_small_right,
-        color: theme["secondary"],
+        color: theme.secondary,
         size: 30.0,
       ),
     );
   }
 
-  Expanded buildTitle(Map<dynamic, dynamic> theme) {
+  Expanded buildTitle(ThemeColors theme) {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: description != "" ? 20 : 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: description != ""
-              ? MainAxisAlignment.spaceAround
-              : MainAxisAlignment.center,
+          mainAxisAlignment: description != "" ? MainAxisAlignment.spaceAround : MainAxisAlignment.center,
           children: [
             Text(
               title,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: theme["textColor"],
+                color: theme.textColor,
                 overflow: TextOverflow.ellipsis,
               ),
               maxLines: 1,
@@ -101,7 +100,7 @@ class ListItemBuilder extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: theme["gray"],
+                  color: theme.gray,
                   overflow: TextOverflow.ellipsis,
                 ),
                 maxLines: 1,
@@ -113,12 +112,12 @@ class ListItemBuilder extends StatelessWidget {
     );
   }
 
-  Padding buildLeftIcon(Map<dynamic, dynamic> theme) {
+  Padding buildLeftIcon(ThemeColors theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Icon(
         icon,
-        color: theme["secondary"],
+        color: theme.secondary,
         size: 30.0,
       ),
     );

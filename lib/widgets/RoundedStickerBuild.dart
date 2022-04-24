@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:passman/models/theme_model.dart';
 import 'package:provider/provider.dart';
 import 'package:passman/cubit/themes_data_cubit.dart';
 import 'package:passman/themes/themes_provider.dart';
@@ -16,7 +17,7 @@ class RoundedStickerBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map theme = context.watch<ThemesProvider>().getColors;
+    ThemeColors theme = context.watch<ThemesProvider>().getColors;
     TextTheme mainTextTheme = Theme.of(context).textTheme;
 
     return Padding(
@@ -25,10 +26,8 @@ class RoundedStickerBuilder extends StatelessWidget {
         alignment: Alignment.centerLeft,
         child: Container(
           decoration: BoxDecoration(
-            color: color ?? theme["fifth"],
-            borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(15),
-                topRight: Radius.circular(15)),
+            color: color ?? theme.fifth,
+            borderRadius: BorderRadius.only(bottomRight: Radius.circular(15), topRight: Radius.circular(15)),
           ),
           padding: EdgeInsets.only(top: 5, left: 5, bottom: 5, right: 45),
           child: Text(

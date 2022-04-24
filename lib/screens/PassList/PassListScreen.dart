@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:passman/models/theme_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:passman/cubit/themes_data_cubit.dart';
@@ -33,14 +34,14 @@ class _PassListScreenState extends State<PassListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Map theme = context.watch<ThemesProvider>().getColors;
+    ThemeColors theme = context.watch<ThemesProvider>().getColors;
     TextTheme mainTextTheme = Theme.of(context).textTheme;
 
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          backgroundColor: theme["primary"],
+          backgroundColor: theme.primary,
           title: Center(
             child: Text(
               'Parolalar',
@@ -49,11 +50,14 @@ class _PassListScreenState extends State<PassListScreen> {
           ),
           actions: [
             IconButton(
-              onPressed: () {
-                Navigator.pushNamed(
+              onPressed: () async {
+                final result = await Navigator.pushNamed(
                   context,
                   route.Settings,
                 );
+                if (result != null) {
+                  getPasswordList();
+                }
               },
               icon: Icon(Icons.settings),
             )
@@ -69,10 +73,7 @@ class _PassListScreenState extends State<PassListScreen> {
                 final result = await Navigator.pushNamed(
                   context,
                   route.PassCreate,
-                  arguments: {
-                    "screenType": "view",
-                    "item": passwordList[index]
-                  },
+                  arguments: {"screenType": "view", "item": passwordList[index]},
                 );
 
                 if (result != null) {
@@ -98,36 +99,35 @@ class _PassListScreenState extends State<PassListScreen> {
     });
   }
 
-  CustomElevatedButton buildFloatingActionButton(Map<dynamic, dynamic> theme) {
+  CustomElevatedButton buildFloatingActionButton(ThemeColors theme) {
     return CustomElevatedButton(
       onPressed: () async {
-        final result = await Navigator.pushNamed(context, route.PassCreate,
-            arguments: {"screenType": "create"});
+        final result = await Navigator.pushNamed(context, route.PassCreate, arguments: {"screenType": "create"});
 
         if (result != null) {
           getPasswordList();
         }
       },
       padding: EdgeInsets.all(15),
-      color: theme["fourth"],
+      color: theme.fourth,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(2000)),
       ),
       child: Icon(
         Icons.add,
         size: 35,
-        color: theme["secondary"],
+        color: theme.secondary,
       ),
     );
   }
 
-  Text buildTitle(Map<dynamic, dynamic> theme) {
+  Text buildTitle(ThemeColors theme) {
     return Text(
       "parola",
       style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: theme["textColor"],
+        color: theme.textColor,
       ),
     );
   }
