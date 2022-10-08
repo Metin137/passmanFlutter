@@ -65,7 +65,7 @@ class _PassListScreenState extends State<PassListScreen> {
         ),
         floatingActionButton: buildFloatingActionButton(theme),
         body: ListView.builder(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           itemCount: passwordList.length,
           itemBuilder: (BuildContext context, int index) {
             return ListItemBuilder(

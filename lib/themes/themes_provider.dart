@@ -13,19 +13,17 @@ import 'package:passman/extensions/color_extension.dart';
 
 class ThemesProvider extends ChangeNotifier {
   SharedPreferencesHelper storageHelper = SharedPreferencesHelper();
-  List<ThemeModel> allThemes = defaultThemes;
-  ThemeColors _colors = defaultThemes[0].colors;
-  String activeThemeName = defaultThemes[0].name;
+  List<ThemeModel> _allThemes = defaultThemes;
+  ThemeModel _activeTheme = defaultThemes[0];
 
-  ThemeColors get getColors {
-    return _colors;
-  }
+  List<ThemeModel> get allThemes => _allThemes;
+  ThemeModel get activeTheme => _activeTheme;
+  ThemeColors get getColors => activeTheme.colors;
 
   bool isDark = true;
 
   ThemesProvider() {
     getAllThemes();
-    //setActiveTheme("dark");
   }
 
   Future<File> convertFile(String path) async {
@@ -48,18 +46,16 @@ class ThemesProvider extends ChangeNotifier {
       var allThemesDecode = jsonDecode(response);
 
       var allThemes2 = allThemesDecode.map((entry) => ThemeModel.fromJson(entry)).toList();
-      allThemes = List<ThemeModel>.from(allThemes2);
+      _allThemes = List<ThemeModel>.from(allThemes2);
       debugPrint("file: " + allThemes.toString());
 
       getActiveTheme();
     } else {
-      //List defaultThemes = [darkColors, lightColors];
       await themesFile.create(recursive: true);
       debugPrint("filecreated: ");
       var themesToJson = allThemes.map((entry) => entry.toJson()).toList();
       List<Map<String, dynamic>> convertJson = List<Map<String, dynamic>>.from(themesToJson);
       await themesFile.writeAsString(jsonEncode(convertJson));
-      //setActiveTheme(allThemes[0].name);
     }
     return themeData;
   }
@@ -67,9 +63,8 @@ class ThemesProvider extends ChangeNotifier {
   getActiveTheme() async {
     String activeThemeKey = await storageHelper.getStorageItem(key: "activeTheme");
 
-    var activeTheme = allThemes.firstWhere((element) => element.name == activeThemeKey);
-    _colors = activeTheme.colors;
-    activeThemeName = activeTheme.name;
+    ThemeModel activeTheme = allThemes.firstWhere((element) => element.name == activeThemeKey);
+    _activeTheme = activeTheme;
     notifyListeners();
     debugPrint("activeTheme: " + activeTheme.name);
   }
@@ -77,9 +72,8 @@ class ThemesProvider extends ChangeNotifier {
   setActiveTheme(String value) async {
     String activeThemeKey = await storageHelper.setStorageItem(key: "activeTheme", value: value);
 
-    var activeTheme = allThemes.firstWhere((element) => element.name == value);
-    _colors = activeTheme.colors;
-    activeThemeName = activeTheme.name;
+    ThemeModel activeTheme = allThemes.firstWhere((element) => element.name == value);
+    _activeTheme = activeTheme;
     notifyListeners();
     debugPrint("activeTheme: " + activeTheme.name);
   }
@@ -127,24 +121,22 @@ class ThemesProvider extends ChangeNotifier {
       );
 
   darkThemes() {
-    _colors = darkColors.colors;
-    activeThemeName = darkColors.name;
+    _activeTheme = darkColors;
     notifyListeners();
   }
 
   lightThemes() {
-    _colors = lightColors.colors;
-    activeThemeName = lightColors.name;
+    _activeTheme = lightColors;
     notifyListeners();
   }
 
   toggleThemes() {
     if (isDark) {
-      lightThemes();
       isDark = false;
+      lightThemes();
     } else {
-      darkThemes();
       isDark = true;
+      darkThemes();
     }
   }
 }
