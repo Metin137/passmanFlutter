@@ -32,7 +32,7 @@ class ListItemBuilder extends StatelessWidget {
     return CustomElevatedButton(
       onPressed: onPressed,
       color: theme.thirth,
-      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       child: Container(
         height: 90,
         width: double.infinity,

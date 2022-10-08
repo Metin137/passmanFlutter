@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:passman/models/theme_model.dart';
+import 'package:passman/utilities/CustomSnackBar.dart';
 import 'package:provider/provider.dart';
 import 'package:passman/cubit/themes_data_cubit.dart';
 import 'package:passman/models/loginPassword_model.dart';
@@ -71,7 +72,12 @@ class _LoginState extends State<Login> {
       bool result = await DatabaseHelper.instance.checkLoginPassword(password);
 
       if (result) {
-        snackBar = SnackBar(content: const Text('Giriş Başarılı'));
+        snackBar = SnackBar(
+          content: CustomSnackBar(text: 'Giriş Başarılı'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        );
 
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
